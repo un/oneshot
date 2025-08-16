@@ -16,13 +16,7 @@ export function PresenceIndicator({ roomId }: PresenceIndicatorProps) {
   const presenceState = usePresence(
     api.presence,
     roomId,
-    currentUser?.userId || "anonymous",
-    {
-      // Optional: Include additional user metadata
-      name: currentUser?.name,
-      email: currentUser?.email,
-      image: currentUser?.image,
-    }
+    currentUser?.userId || "anonymous"
   );
 
   if (!presenceState) {
@@ -53,11 +47,11 @@ export function PresenceIndicator({ roomId }: PresenceIndicatorProps) {
           {otherUsers.slice(0, 5).map((user) => (
             <Avatar key={user.userId} className="h-8 w-8 border-2 border-background">
               <AvatarImage 
-                src={user.data?.image as string} 
-                alt={user.data?.name as string || "User"} 
+                src={user.image} 
+                alt={user.name || "User"} 
               />
               <AvatarFallback>
-                {(user.data?.name as string || "U").charAt(0).toUpperCase()}
+                {(user.name || user.userId || "U").charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
           ))}

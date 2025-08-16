@@ -1,6 +1,6 @@
 import { components, internal } from "./_generated/api";
 import { Resend, vOnEmailEventArgs } from "@convex-dev/resend";
-import { internalMutation } from "./_generated/server";
+import { internalMutation, mutation, internalAction } from "./_generated/server";
 import { v } from "convex/values";
 
 // Initialize Resend component
@@ -45,8 +45,8 @@ export const handleEmailEvent = internalMutation({
   },
 });
 
-// Send a welcome email when a user signs up
-export const sendWelcomeEmail = internalMutation({
+// Internal action to send a welcome email
+export const sendWelcomeEmailInternal = internalAction({
   args: {
     email: v.string(),
     name: v.optional(v.string()),
@@ -101,8 +101,21 @@ export const sendWelcomeEmail = internalMutation({
   },
 });
 
-// Send a notification email
-export const sendNotificationEmail = internalMutation({
+// Public mutation to send a welcome email
+export const sendWelcomeEmail = mutation({
+  args: {
+    email: v.string(),
+    name: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    // Call the internal action
+    await ctx.scheduler.runAfter(0, internal.emails.sendWelcomeEmailInternal, args);
+    return { success: true };
+  },
+});
+
+// Internal action to send a notification email
+export const sendNotificationEmailInternal = internalAction({
   args: {
     email: v.string(),
     subject: v.string(),
@@ -127,5 +140,19 @@ export const sendNotificationEmail = internalMutation({
     });
     
     return emailId;
+  },
+});
+
+// Public mutation to send a notification email
+export const sendNotificationEmail = mutation({
+  args: {
+    email: v.string(),
+    subject: v.string(),
+    content: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Call the internal action
+    await ctx.scheduler.runAfter(0, internal.emails.sendNotificationEmailInternal, args);
+    return { success: true };
   },
 });

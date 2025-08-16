@@ -1,10 +1,9 @@
-import { createAuth } from "@/lib/auth";
-import { convexAuthNextjsServerHelper } from "@convex-dev/better-auth/nextjs/server";
+import { nextJsHandler } from "@convex-dev/better-auth/nextjs";
 
-const handler = convexAuthNextjsServerHelper({
-  createAuth,
-  apiRoute: "/api/auth",
+// This creates the handler for Next.js App Router
+const handler = nextJsHandler({
+  convexSiteUrl: process.env.NEXT_PUBLIC_CONVEX_URL?.replace('.cloud', '.site'),
 });
 
-export const GET = handler;
-export const POST = handler;
+export const GET = handler.GET;
+export const POST = handler.POST;
